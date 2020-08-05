@@ -7,22 +7,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import org.assertj.core.util.Lists;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.BeforeEach;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Specialty;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.service.ClinicService;
-import org.springframework.test.context.ContextConfiguration;
+
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-//@SpringJUnitWebConfig(locations = {"classpath:spring/mvc-test-config.xml", "classpath:spring/mvc-core-config.xml"})
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations= {"classpath:spring/mvc-core-config.xml","classpath:mvc-test-config.xml"})
+@SpringJUnitWebConfig(locations = {"classpath:spring/mvc-test-config.xml", "classpath:spring/mvc-core-config.xml"})
 public class VetTests 
 {
 	 @Autowired
@@ -34,7 +31,7 @@ public class VetTests
 	    private MockMvc mockMvc;
 
 	    
-	    @Before
+	    @BeforeEach
 	    public void setup() 
 	    {
 	        this.mockMvc = MockMvcBuilders.standaloneSetup(vetController).build();
@@ -55,7 +52,7 @@ public class VetTests
 
 	    }
 	    
-	    @Test
+	    @org.junit.jupiter.api.Test
 	    public void showVetListTest() throws Exception
 	    {
 	    	mockMvc.perform(get("/vets.html"))

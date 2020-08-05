@@ -1,9 +1,11 @@
 package org.springframework.samples.petclinic.service;
 
-import static org.junit.Assert.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
@@ -32,7 +34,7 @@ public class TestClinicServiceImpl {
 	ClinicServiceImpl clinicServImpl;
 	
 	
-	@Before
+	@BeforeEach
 	public void setUp()
 	{
 		petRepository=Mockito.mock(JpaPetRepositoryImpl.class);
