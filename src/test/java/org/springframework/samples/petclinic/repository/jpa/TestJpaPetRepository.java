@@ -11,49 +11,38 @@ import org.springframework.samples.petclinic.repository.PetRepository;
 import org.springframework.test.context.ContextConfiguration;
 
 
-@ContextConfiguration(locations = {"classpath:spring/mvc-core-config.xml", 
-		"classpath:spring/mvc-test-config.xml",
-		"classpath:spring/business-config.xml",
-		"classpath:spring/datasource-config.xml", 
-		"classpath:spring/mvc-view-config.xml",
-		"classpath:spring/tools-config.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = 
+{"classpath:spring/business-config.xml",
+		"classpath:spring/mvc-test-config.xml"})
+@ActiveProfiles("jpa")
 public class TestJpaPetRepository {
 	
 	@Autowired
 	PetRepository petRepo;
 	
-//    @Override
-//    public Pet findById(int id) {
-//        return this.em.find(Pet.class, id);
-//    }
-
-	@Autowired
-	PetRepository petRepository;
-	
 	
 	@Test
-	public void TestfindById()
-	{
-		Pet p=new Pet();
-		p.setId(1);
-		petRepository.save(p);
+	@Transactional
+	@Rollback(true)
+	public void testFindpetById() {
+		Pet pet = petRepo.findById(1);
 		
-		assertEquals(p, petRepository.findById(1));
+		assertTrue(pet!=null);
+		assertTrue(pet.getName().equals("Leo"));
 	}
+
 	
 	@Test
+	@Transactional
+	@Rollback(true)
 	public void TestPetType()
 	{
-		Pet p=new Pet();
-		p.setType(new PetType());
-
-		Pet p1=new Pet();
-		p1.setType(new PetType());
-
-		petRepository.save(p);
-		petRepository.save(p1);
-		
-		assertEquals(2, petRepository.findPetTypes().size());
+		assertEquals(6, petRepo.findPetTypes().size());
+		assertEquals("bird", petRepo.findPetTypes().get(0).getName());
+		assertEquals(new Integer(5), petRepo.findPetTypes().get(0).getId());
+		assertEquals("cat", petRepo.findPetTypes().get(1).getName());
+		assertEquals(new Integer(1), petRepo.findPetTypes().get(1).getId());
 	}
 
 }
