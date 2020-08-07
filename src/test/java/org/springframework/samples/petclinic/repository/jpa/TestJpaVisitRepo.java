@@ -13,28 +13,29 @@ import org.springframework.samples.petclinic.repository.VisitRepository;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 
-@ContextConfiguration(locations = {"classpath:spring/mvc-core-config.xml", 
-		"classpath:spring/mvc-test-config.xml",
-		"classpath:spring/business-config.xml",
-		"classpath:spring/datasource-config.xml", 
-		"classpath:spring/mvc-view-config.xml",
-		"classpath:spring/tools-config.xml"})
+@ContextConfiguration(locations = 
+{"classpath:spring/business-config.xml",
+		"classpath:spring/mvc-test-config.xml"})
+@ActiveProfiles("jpa")
 public class TestJpaVisitRepo {
 
 	@Autowired
     VisitRepository visitRepo;
-    
-	@Test
+    	@Test
 	@Transactional
 	@Rollback(true)
 	public void testSave()
 	{
+		
+		Pet p=new Pet();		
+		LocalDate date = LocalDate.now();  
 		Visit v= new Visit();
-		Pet p=new Pet();
-		p.setId(1);;
 		v.setPet(p);
+		v.setDate(date);
+		v.setDescription("Something");
 		visitRepo.save(v);
-		assertEquals(v, visitRepo.findByPetId(1));
+		Integer a= new Integer(20);
+		assertEquals(v, visitRepo.findByPetId(a));
     }
 
 
@@ -42,16 +43,18 @@ public class TestJpaVisitRepo {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void testFindPetById()
+	public void testFindByPetById()
 	{
-		Visit v= new Visit();
-		Pet p=new Pet();
-		p.setId(1);
-		v.setPet(p);
-		visitRepo.save(v);
+		Integer a= new Integer(7);
 		
-		
-		assertEquals(1,visitRepo.findByPetId(1).size() );
+		Collection<Visit> v=visitRepo.findByPetId(a);
+		ArrayList<Visit> newList = new ArrayList<>(v);
+	
+		assertEquals(2, v.size());
+		assertEquals("rabies shot", newList.get(0).getDescription());
+		assertEquals(new Integer(1), newList.get(0).getId());
+		assertEquals("spayed", newList.get(1).getDescription());
+		assertEquals(new Integer(4), newList.get(1).getId());
 	}
 
 
