@@ -4,37 +4,20 @@ package org.springframework.samples.petclinic.repository.jpa;
 import static org.mockito.Mockito.*;
 import static org.mockito.BDDMockito.given;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.repository.OwnerRepository;
-import org.springframework.stereotype.Repository;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.junit4.SpringRunner;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-//@RunWith(SpringJUnit4ClassRunner.class)
-//@ContextConfiguration(locations = {"classpath:spring/mvc-core-config.xml", 
-//		"classpath:spring/mvc-test-config.xml",
-//		"classpath:spring/business-config.xml",
-//		"classpath:spring/datasource-config.xml", 
-//		"classpath:spring/mvc-view-config.xml",
-//		"classpath:spring/tools-config.xml"})
+
 @SpringJUnitConfig(locations= {"classpath:spring/business-config.xml","classpath:spring/mvc-test-config.xml"})
 @ActiveProfiles({"jpa","HSQLDB"})
 public class TestJpaOwnerRepository {
@@ -51,20 +34,25 @@ public class TestJpaOwnerRepository {
 	@Rollback(true)
 	public void testFindById()
 	{
-		Owner o=new Owner();
-		o.setId(1);
-		o.setLastName("David");
-		o.setFirstName("Test");
-		o.setAddress("test");
-		o.setCity("test");
-		o.setTelephone("1234567899");
+		Owner owner = getOwnerObject();
+		jpaOwnerRepo.save(owner);
 		
-		jpaOwnerRepo.save(o);
+		assertNotNull(owner.getId());
+		assertNotNull(jpaOwnerRepo.findById(owner.getId()));
+		assertEquals(owner.getLastName(), jpaOwnerRepo.findById(owner.getId()).getLastName());
+	}
+	
+	
+	
+	private Owner getOwnerObject() {
+		Owner owner=new Owner();
+		owner.setLastName("David");
+		owner.setFirstName("Test");
+		owner.setAddress("test");
+		owner.setCity("test");
+		owner.setTelephone("1234567899");
 		
-		//assertEquals("David", jpaOwnerRepo.findById(1).getLastName());
-    
-		given(query.getSingleResult()).willReturn(o);
-		assertEquals("David", jpaOwnerRepo.findById(1).getLastName());
+		return owner;
 	}
 
 	
