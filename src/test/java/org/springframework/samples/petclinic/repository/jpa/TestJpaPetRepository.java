@@ -2,8 +2,8 @@ package org.springframework.samples.petclinic.repository.jpa;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.util.List;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.Test;
@@ -51,7 +51,7 @@ public class TestJpaPetRepository {
 	
 		Pet expectedPet = petRepo.findById(pet.getId());
 		assertNotNull(expectedPet);
-		assertEquals(pet.getName(), expectedPet.getName());
+		assertEquals(pet.getId(), expectedPet.getId());
 	
 	}
 
