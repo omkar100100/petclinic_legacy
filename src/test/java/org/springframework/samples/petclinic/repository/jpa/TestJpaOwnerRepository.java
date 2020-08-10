@@ -1,89 +1,83 @@
 package org.springframework.samples.petclinic.repository.jpa;
 
-
-import static org.mockito.Mockito.*;
-
-
-import static org.mockito.BDDMockito.given;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.repository.OwnerRepository;
-import org.springframework.stereotype.Repository;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.junit4.SpringRunner;
+
+import static org.mockito.Mockito.*;
+
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-//@RunWith(SpringJUnit4ClassRunner.class)
 @SpringJUnitConfig(locations= {"classpath:spring/business-config.xml","classpath:spring/mvc-test-config.xml"})
 @ActiveProfiles({"jpa","HSQLDB"})
 public class TestJpaOwnerRepository {
 
-	
-	
 	@Autowired
 	OwnerRepository ownerRepository;
-	
-	
+
+	private Owner getOwnerObject() {
+		Owner owner=new Owner();
+		owner.setLastName("David");
+		owner.setFirstName("Test");
+		owner.setAddress("test");
+		owner.setCity("test");
+		owner.setId(1);
+		owner.setTelephone("1234567899");
+		
+		return owner;
+	}
+
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void testFindById1() {
-		Owner owner = ownerRepository.findById(1);
+	public void testFindById()
+	{
+		Owner owner = getOwnerObject();
+		ownerRepository.save(owner);
 		
-		assertTrue(owner!=null);
-		assertTrue(owner.getFirstName().equals("George"));
-		assertTrue(owner.getLastName().equals("Franklin"));
-		assertTrue(owner.getCity().equals("Madison"));
-		assertTrue(owner.getTelephone().equals("6085551023"));
-		assertTrue(owner.getAddress().equals("110 W. Liberty St."));		
-		
+		assertNotNull(owner.getId());
+		assertNotNull(ownerRepository.findById(owner.getId()));
+		assertEquals(owner.getLastName(), ownerRepository.findById(owner.getId()).getLastName());
 	}
+	
 	@Test
 	@Transactional
 	@Rollback(true)
 	public void testSave()
 	{
-		Owner o=new Owner();
-		o.setId(1);
-		o.setLastName("David");
-		o.setFirstName("Test");
-		o.setAddress("test");
-		o.setCity("test");
-		o.setTelephone("1234567899");
+		Owner o=getOwnerObject();
+		
 		ownerRepository.save(o);
-		assertEquals("David", ownerRepository.findById(1).getLastName());
+		System.out.println("The id is : "+o.getId());
+		assertEquals("David", ownerRepository.findById(o.getId()).getLastName());
 	}
+
+	
 	@Test
 	@Transactional
 	@Rollback(true)
 	public void testFindByLastName()
 	{
-		ArrayList<Owner> owner2 =  (ArrayList<Owner>) ownerRepository.findByLastName("Franklin");
-	//	assertTrue(owner2.get(0).getFirstName().equals("George"));
-		assertTrue(owner2.get(0).getLastName().equals("Franklin"));
-		assertTrue(owner2.get(0).getCity().equals("Madison"));
-		assertTrue(owner2.get(0).getTelephone().equals("6085551023"));
-		assertTrue(owner2.get(0).getAddress().equals("110 W. Liberty St."));		
+		Owner owner = getOwnerObject();
+		ownerRepository.save(owner);
+		
+		ArrayList<Owner> owner2 =  (ArrayList<Owner>) ownerRepository.findByLastName(owner.getLastName());
+		
+		assertTrue(owner2.get(0).getFirstName().equals(owner.getFirstName()));
+		assertTrue(owner2.get(0).getLastName().equals(owner.getLastName()));
+		assertTrue(owner2.get(0).getCity().equals(owner.getCity()));
+		assertTrue(owner2.get(0).getTelephone().equals(owner.getTelephone()));
+		assertTrue(owner2.get(0).getAddress().equals(owner.getAddress()));		
 		
     }
-
-
 }
