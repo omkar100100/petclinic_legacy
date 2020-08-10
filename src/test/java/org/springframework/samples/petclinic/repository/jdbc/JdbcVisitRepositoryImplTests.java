@@ -13,7 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.samples.petclinic.model.Visit;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
+import org.springframework.transaction.annotation.Transactional;
 
+@SpringJUnitWebConfig(locations = {"classpath:spring/mvc-test-config.xml", "classpath:spring/mvc-core-config.xml"})
+@ActiveProfiles({"jdbc","HSQLDB"})
 public class JdbcVisitRepositoryImplTests 
 {
   DataSource dataSource;
@@ -28,6 +34,7 @@ public class JdbcVisitRepositoryImplTests
 			      .build();
 	}
 	
+
 	@Test
 	public void findByPetId()
 	{

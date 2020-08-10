@@ -18,7 +18,7 @@ import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.service.ClinicService;
 import org.springframework.test.context.ContextConfiguration;
-
+import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -28,7 +28,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Rajeshbabu
  *
  */
-@ContextConfiguration(locations= {"classpath:spring/mvc-core-config.xml","classpath:spring/mvc-test-config.xml"})
+@SpringJUnitWebConfig(locations = {"classpath:spring/mvc-core-config.xml", "classpath:spring/mvc-test-config.xml"})
+
+//@ContextConfiguration(locations= {"classpath:spring/mvc-core-config.xml","classpath:spring/mvc-test-config.xml"})
 public class PetTests 
 {
 	private static final int OWNER_ID = 2373810;

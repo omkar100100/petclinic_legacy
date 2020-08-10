@@ -90,7 +90,8 @@ public class JdbcOwnerRepositoryImpl implements OwnerRepository {
      * for the corresponding owner, if not already loaded.
      */
     @Override
-    public Owner findById(int id) {
+    public Owner findById(int id) 
+    {
         Owner owner;
         try {
             Map<String, Object> params = new HashMap<>();

@@ -17,6 +17,8 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.repository.OwnerRepository;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 
 public class JdbcPetRepositoryImplTest 
@@ -45,7 +47,7 @@ public class JdbcPetRepositoryImplTest
 		assertEquals(6,list.size());
 	}
 	
-	@Test
+	/*@Test
 	public void findByIdTest()
 	{
 	    Pet p = new Pet();
@@ -54,6 +56,6 @@ public class JdbcPetRepositoryImplTest
 	     p = jdbcPetDao.findById(1);
 		System.out.println(jdbcPetDao.findById(1)+"    hh       "+p);
 		//assertEquals(6,list.size());
-	}
+	}*/
 	
 	}

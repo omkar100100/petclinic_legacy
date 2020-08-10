@@ -74,6 +74,57 @@ public class TestJpaPetRepository {
 		return owner;
 	}
 	
+	@SuppressWarnings("deprecation")
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void TestPetType()
+	{
+        final String PET_NAME="PINKY";	
+		List<PetType> petTypes = petRepo.findPetTypes();
+		
+		
+		Pet pet=new Pet();
+		pet.setName(PET_NAME);
+		pet.setType(petTypes.get(3));
+		Owner owner = getOwnerObject();
+		owner.addPet(pet);
+		jpaOwnerRepo.save(owner);
+		assertNotNull(owner.getId());
+		assertNotNull(owner.getPet(PET_NAME));
+	
+		List<PetType> pets = petRepo.findPetTypes();
+		System.out.println(pets);
+		assertNotNull(pets);
+		assertEquals("hamster", petRepo.findPetTypes().get(3).getName());
+		System.out.println("---------***-------"+petRepo.findPetTypes().get(4));
+		assertEquals(6, petRepo.findPetTypes().get(3).getId());
+	}
+	
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void TestSave()
+	{
+		final String PET_NAME="PINKY";	
+		List<PetType> petTypes = petRepo.findPetTypes();
+		
+		
+		Pet pet=new Pet();
+		pet.setName(PET_NAME);
+		pet.setType(petTypes.get(2));
+		Owner owner = getOwnerObject();
+		owner.addPet(pet);
+		jpaOwnerRepo.save(owner);
+		assertNotNull(owner.getId());
+		assertNotNull(owner.getPet(PET_NAME));
+	
+		Pet expectedPet = petRepo.findById(pet.getId());
+		assertNotNull(expectedPet);
+		assertEquals(pet.getName(), expectedPet.getName());
+	
+	}
+	
 //	@Test
 //	public void TestPetType()
 //	{
