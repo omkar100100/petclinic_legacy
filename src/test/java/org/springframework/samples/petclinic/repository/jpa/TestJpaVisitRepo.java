@@ -2,6 +2,10 @@ package org.springframework.samples.petclinic.repository.jpa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
@@ -11,33 +15,16 @@ import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.repository.VisitRepository;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-@ContextConfiguration(locations = 
-{"classpath:spring/business-config.xml",
-		"classpath:spring/mvc-test-config.xml"})
-@ActiveProfiles("jpa")
+@SpringJUnitConfig(locations= {"classpath:spring/business-config.xml","classpath:spring/mvc-test-config.xml"})
+@ActiveProfiles({"jpa","HSQLDB"})
 public class TestJpaVisitRepo {
 
 	@Autowired
     VisitRepository visitRepo;
-    	@Test
-	@Transactional
-	@Rollback(true)
-	public void testSave()
-	{
-		
-		Pet p=new Pet();		
-		LocalDate date = LocalDate.now();  
-		Visit v= new Visit();
-		v.setPet(p);
-		v.setDate(date);
-		v.setDescription("Something");
-		visitRepo.save(v);
-		Integer a= new Integer(20);
-		assertEquals(v, visitRepo.findByPetId(a));
-    }
-
 
     
 	@Test
