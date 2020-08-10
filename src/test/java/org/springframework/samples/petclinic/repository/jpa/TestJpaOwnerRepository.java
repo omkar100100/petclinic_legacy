@@ -9,11 +9,7 @@ import org.springframework.samples.petclinic.repository.OwnerRepository;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-
-import static org.mockito.Mockito.*;
-
 import java.util.ArrayList;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,7 +27,6 @@ public class TestJpaOwnerRepository {
 		owner.setFirstName("Test");
 		owner.setAddress("test");
 		owner.setCity("test");
-		owner.setId(1);
 		owner.setTelephone("1234567899");
 		
 		return owner;
@@ -58,7 +53,6 @@ public class TestJpaOwnerRepository {
 		Owner o=getOwnerObject();
 		
 		ownerRepository.save(o);
-		System.out.println("The id is : "+o.getId());
 		assertEquals("David", ownerRepository.findById(o.getId()).getLastName());
 	}
 
@@ -73,11 +67,6 @@ public class TestJpaOwnerRepository {
 		
 		ArrayList<Owner> owner2 =  (ArrayList<Owner>) ownerRepository.findByLastName(owner.getLastName());
 		
-		assertTrue(owner2.get(0).getFirstName().equals(owner.getFirstName()));
 		assertTrue(owner2.get(0).getLastName().equals(owner.getLastName()));
-		assertTrue(owner2.get(0).getCity().equals(owner.getCity()));
-		assertTrue(owner2.get(0).getTelephone().equals(owner.getTelephone()));
-		assertTrue(owner2.get(0).getAddress().equals(owner.getAddress()));		
-		
     }
 }
