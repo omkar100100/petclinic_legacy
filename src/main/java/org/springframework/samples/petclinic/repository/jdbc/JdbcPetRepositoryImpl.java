@@ -75,6 +75,7 @@ public class JdbcPetRepositoryImpl implements PetRepository {
 
     @Override
     public Pet findById(int id) {
+    	System.out.println("----------------pet findByid");
         Integer ownerId;
         try {
             Map<String, Object> params = new HashMap<>();

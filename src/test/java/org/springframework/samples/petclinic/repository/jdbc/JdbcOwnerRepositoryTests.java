@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.sql.DataSource;
+import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.samples.petclinic.model.Owner;
+import org.springframework.samples.petclinic.model.PetType;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
@@ -29,7 +32,8 @@ public class JdbcOwnerRepositoryTests
 	@Autowired
 	JdbcOwnerRepositoryImpl  jdbcOwnerRepository;
 	
-		
+	@Transactional
+	@Rollback(true)	
 	@Test
 	public void testFindByLastName() {
 		//Saving
@@ -44,7 +48,64 @@ public class JdbcOwnerRepositoryTests
 		assertEquals(owner.getLastName(), dbOwner.getLastName());
 	}
 	
-	private Owner getOwnerObject() {
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void testFindById()
+	{
+		//Saving
+				Owner owner = getOwnerObject();
+				System.out.println("------------------"+owner);
+				jdbcOwnerRepository.save(owner);
+				assertNotNull(owner);
+				assertNotNull(owner.getId());
+		//FINDING
+				Owner dbOwner = jdbcOwnerRepository.findById(owner.getId());
+				assertNotNull(dbOwner);
+				System.out.println(owner.getId());
+				assertEquals(owner.getId(), dbOwner.getId());
+	}
+	
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void testSave()
+	{
+     Owner o=getOwnerObject();
+     jdbcOwnerRepository.save(o);
+     assertEquals("1234567899", jdbcOwnerRepository.findById(o.getId()).getTelephone());
+	}
+	
+	
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void testGetPetTypes()
+	{
+		//Saving
+		Owner owner = getOwnerObject();
+		jdbcOwnerRepository.save(owner);
+		assertNotNull(owner);
+		assertNotNull(owner.getId());
+    //FINDING
+		Collection<PetType> petType = new ArrayList<PetType>();
+		petType = jdbcOwnerRepository.getPetTypes();
+		assertNotNull(petType);
+		assertEquals("lizard", ((ArrayList<PetType>) petType).get(4).toString());
+}
+
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void testLoadPetsAndVisits()
+	{
+		
+	}
+	
+
+	
+	private Owner getOwnerObject() 
+	{
 		Owner owner=new Owner();
 		owner.setLastName("David");
 		owner.setFirstName("Test");

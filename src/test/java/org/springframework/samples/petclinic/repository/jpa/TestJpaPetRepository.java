@@ -56,7 +56,7 @@ public class TestJpaPetRepository {
 		jpaOwnerRepo.save(owner);
 		assertNotNull(owner.getId());
 		assertNotNull(owner.getPet(PET_NAME));
-	
+	System.out.println("-------------------here-----------------"+pet.getId());
 		Pet expectedPet = petRepo.findById(pet.getId());
 		assertNotNull(expectedPet);
 		assertEquals(pet.getName(), expectedPet.getName());

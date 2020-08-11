@@ -108,7 +108,8 @@ public class JdbcOwnerRepositoryImpl implements OwnerRepository {
         return owner;
     }
 
-    public void loadPetsAndVisits(final Owner owner) {
+    public void loadPetsAndVisits(final Owner owner) 
+    {
         Map<String, Object> params = new HashMap<>();
         params.put("id", owner.getId());
         final List<JdbcPet> pets = this.namedParameterJdbcTemplate.query(

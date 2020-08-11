@@ -1,61 +1,139 @@
 package org.springframework.samples.petclinic.repository.jdbc;
 
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.sql.DataSource;
+import javax.transaction.Transactional;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.hibernate.type.descriptor.java.LocalDateJavaDescriptor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
-import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.repository.OwnerRepository;
+import org.springframework.samples.petclinic.repository.PetRepository;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import java.util.List;
+import org.springframework.samples.petclinic.model.PetType;
 
-
+@SpringJUnitConfig(locations= {"classpath:spring/business-config.xml","classpath:spring/mvc-test-config.xml"})
+@ActiveProfiles({"jdbc","HSQLDB"})
 public class JdbcPetRepositoryImplTest 
 {
-	DataSource dataSource;
+	@Autowired
+	PetRepository jdbcpetRepository;
 	
 	@Autowired
-	OwnerRepository ownerRepository;
+	JdbcOwnerRepositoryImpl jdbcOwnerRepository;
 	
-	@BeforeEach
-	void setUp()
-	{
-	   dataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.HSQL)
-			      .addScript("classpath:db/hsqldb/initDB.sql")
-			      .addScript("classpath:db/hsqldb/populateDB.sql")
-			      .build();
-	}
 	
+	@Transactional
+	@Rollback(true)
 	@Test
-	public void findPetTypesTest() throws Exception
+	public void TestfindById()
 	{
-		List<PetType> list = new ArrayList<PetType>();
-		JdbcPetRepositoryImpl jdbcPetDao = new JdbcPetRepositoryImpl(dataSource,ownerRepository);
-		list = (List<PetType>) jdbcPetDao.findPetTypes();
-		//System.out.println(list);
-		assertEquals(6,list.size());
+		final String PET_NAME="George";
+		List<PetType> petTypes = jdbcpetRepository.findPetTypes();
+		
+		Pet pet=new Pet();
+		pet.setId(6);
+		pet.setName(PET_NAME);
+		pet.setType(petTypes.get(2));
+		Owner owner = getOwnerObject();
+		owner.addPet(pet);
+		jdbcOwnerRepository.save(owner);
+		assertNotNull(owner.getId());
+		assertNotNull(owner.getPet(PET_NAME));
+	
+		Pet expectedPet = jdbcpetRepository.findById(pet.getId());
+		assertNotNull(expectedPet);
+		assertEquals(pet.getName(), expectedPet.getName());
+	
 	}
 	
-	/*@Test
-	public void findByIdTest()
+	private Owner getOwnerObject() {
+		Owner owner=new Owner();
+		owner.setId(11);
+		owner.setLastName("David");
+		owner.setFirstName("Test");
+		owner.setAddress("test");
+		owner.setCity("test");
+		owner.setTelephone("1234567899");
+		
+		return owner;
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void TestPetType()
 	{
-	    Pet p = new Pet();
-		//List<Pet> list = new ArrayList<Pet>();
-		JdbcPetRepositoryImpl jdbcPetDao = new JdbcPetRepositoryImpl(dataSource,ownerRepository);
-	     p = jdbcPetDao.findById(1);
-		System.out.println(jdbcPetDao.findById(1)+"    hh       "+p);
-		//assertEquals(6,list.size());
-	}*/
+        final String PET_NAME="George";	
+		List<PetType> petTypes = jdbcpetRepository.findPetTypes();
+		
+		
+		Pet pet=new Pet();
+		pet.setId(6);
+		pet.setName(PET_NAME);
+		pet.setType(petTypes.get(3));
+		Owner owner = getOwnerObject();
+		owner.addPet(pet);
+		jdbcOwnerRepository.save(owner);
+		assertNotNull(owner.getId());
+		assertNotNull(owner.getPet(PET_NAME));
+	
+		List<PetType> pets = jdbcpetRepository.findPetTypes();
+		System.out.println(pets);
+		assertNotNull(pets);
+		assertEquals("hamster", jdbcpetRepository.findPetTypes().get(3).getName());
+		//System.out.println("---------***-------"+jdbcpetRepository.findPetTypes().get(4));
+		assertEquals(6, jdbcpetRepository.findPetTypes().get(3).getId());
+	}
+	
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void TestSave()
+	{
+		final String PET_NAME="George";	
+		List<PetType> petTypes = jdbcpetRepository.findPetTypes();
+		System.out.println("---------------------------->> "+petTypes);
+		
+		Pet pet=new Pet();
+		pet.setId(6);
+		pet.setName(PET_NAME);
+		pet.setType(petTypes.get(2));
+		pet.getOwner();
+		Owner owner = getOwnerObject();
+		owner.addPet(pet);
+		jdbcOwnerRepository.save(owner);
+		assertNotNull(owner.getId());
+		assertNotNull(owner.getPet(PET_NAME));
+		Pet expectedPet = jdbcpetRepository.findById(pet.getId());
+		assertNotNull(expectedPet);
+		assertEquals(pet.getName(), expectedPet.getName());
 	
 	}
+	
+//	@Test
+//	public void TestPetType()
+//	{
+//		Pet p=new Pet();
+//		p.setType(new PetType());
+//
+//		Pet p1=new Pet();
+//		p1.setType(new PetType());
+//
+//		petRepository.save(p);
+//		petRepository.save(p1);
+//		
+//		assertEquals(2, petRepository.findPetTypes().size());
+//	}
+
+}
