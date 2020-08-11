@@ -10,7 +10,10 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import java.util.ArrayList;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -20,17 +23,6 @@ public class TestJpaOwnerRepository {
 
 	@Autowired
 	OwnerRepository ownerRepository;
-
-	private Owner getOwnerObject() {
-		Owner owner=new Owner();
-		owner.setLastName("David");
-		owner.setFirstName("Test");
-		owner.setAddress("test");
-		owner.setCity("test");
-		owner.setTelephone("1234567899");
-		
-		return owner;
-	}
 
 	@Test
 	@Transactional
@@ -50,10 +42,10 @@ public class TestJpaOwnerRepository {
 	@Rollback(true)
 	public void testSave()
 	{
-		Owner o=getOwnerObject();
+		Owner owner=getOwnerObject();
 		
-		ownerRepository.save(o);
-		assertEquals("David", ownerRepository.findById(o.getId()).getLastName());
+		ownerRepository.save(owner);
+		assertEquals(owner.getLastName(), ownerRepository.findById(owner.getId()).getLastName());
 	}
 
 	
@@ -65,8 +57,25 @@ public class TestJpaOwnerRepository {
 		Owner owner = getOwnerObject();
 		ownerRepository.save(owner);
 		
-		ArrayList<Owner> owner2 =  (ArrayList<Owner>) ownerRepository.findByLastName(owner.getLastName());
+		ArrayList<Owner> dbOwners =  (ArrayList<Owner>) ownerRepository.findByLastName(owner.getLastName());
 		
-		assertTrue(owner2.get(0).getLastName().equals(owner.getLastName()));
+		assertNotNull(dbOwners);
+		assertFalse(dbOwners.isEmpty());
+		assertTrue(dbOwners.contains(owner));
+		
+		Optional<Owner> searchOwner = dbOwners.stream().filter(dbOwner -> dbOwner.getId()== owner.getId()).findAny();
+		assertTrue(searchOwner.isPresent());
+		assertTrue(searchOwner.get().getLastName().equals(owner.getLastName()));
     }
+	
+	private Owner getOwnerObject() {
+		Owner owner=new Owner();
+		owner.setLastName("David");
+		owner.setFirstName("Test");
+		owner.setAddress("test");
+		owner.setCity("test");
+		owner.setTelephone("1234567899");
+		
+		return owner;
+	}
 }

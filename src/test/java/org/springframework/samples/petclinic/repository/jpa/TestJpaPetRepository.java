@@ -2,9 +2,13 @@ package org.springframework.samples.petclinic.repository.jpa;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
+import java.util.Optional;
+
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,15 +32,13 @@ public class TestJpaPetRepository {
 	@Autowired
 	OwnerRepository jpaOwnerRepo;
 		
-
+	final String PET_NAME="PINKY";
+	
 	@Transactional
 	@Rollback(true)
 	@Test
 	public void TestfindById()
 	{
-		final String PET_NAME="PINKY";
-		
-		
 		List<PetType> petTypes = petRepo.findPetTypes();
 		
 		
@@ -60,10 +62,7 @@ public class TestJpaPetRepository {
 	@Test
 	public void TestSave()
 	{
-		final String PET_NAME="PINKY";
-		
-		
-		List<PetType> petTypes = petRepo.findPetTypes();
+		List<PetType> petTypes = getPetTypes();
 		
 		
 		Pet pet=new Pet();
@@ -75,12 +74,41 @@ public class TestJpaPetRepository {
 		assertNotNull(owner.getId());
 		assertNotNull(owner.getPet(PET_NAME));
 	
-		Pet expectedPet = petRepo.findById(pet.getId());
-		assertNotNull(expectedPet);
-		assertEquals(pet.getName(), expectedPet.getName());
+		Pet dbPet = petRepo.findById(pet.getId());
+		assertNotNull(dbPet);
+		assertEquals(pet.getName(), dbPet.getName());
 	
 	}
 
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void TestPetType()
+	{
+		List<PetType> petTypes = getPetTypes();
+		
+		Pet pet=new Pet();
+		pet.setName(PET_NAME);
+		pet.setType(petTypes.get(2));
+		Owner owner = getOwnerObject();
+		owner.addPet(pet);
+		jpaOwnerRepo.save(owner);
+		
+		assertNotNull(owner.getId());
+		assertNotNull(owner.getPet(PET_NAME));
+	
+		Optional<PetType> dbPet = petTypes.stream().filter( dbPetType -> dbPetType.getId()== pet.getType().getId()).findAny();
+		assertTrue(dbPet.isPresent());
+		
+	}
+	
+	private List<PetType> getPetTypes(){
+		List<PetType> petTypes = petRepo.findPetTypes();
+		assertNotNull(petTypes);
+		assertFalse(petTypes.isEmpty());
+		
+		return petTypes;
+	}
 	
 	private Owner getOwnerObject() {
 		Owner owner=new Owner();
@@ -93,33 +121,6 @@ public class TestJpaPetRepository {
 		return owner;
 	}
 
-
-	@Test
-	@Transactional
-	@Rollback(true)
-	public void TestPetType()
-	{
-
-		final String PET_NAME="PINKY";
-		
-		
-		List<PetType> petTypes = petRepo.findPetTypes();
-		
-		
-		Pet pet=new Pet();
-		pet.setName(PET_NAME);
-		pet.setType(petTypes.get(2));
-		Owner owner = getOwnerObject();
-		owner.addPet(pet);
-		jpaOwnerRepo.save(owner);
-		assertNotNull(owner.getId());
-		assertNotNull(owner.getPet(PET_NAME));
-	
-		List<PetType> expectedPet = petRepo.findPetTypes();
-		assertNotNull(expectedPet);
-		assertEquals("bird", petRepo.findPetTypes().get(0).getName());
-		assertEquals(new Integer(5), petRepo.findPetTypes().get(0).getId());
-	}
 	
 
 }
