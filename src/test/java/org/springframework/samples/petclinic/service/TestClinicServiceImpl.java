@@ -2,6 +2,7 @@ package org.springframework.samples.petclinic.service;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import static org.mockito.BDDMockito.given;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -41,80 +42,82 @@ public class TestClinicServiceImpl {
 		ownerRepository=Mockito.mock(JpaOwnerRepositoryImpl.class);
 		vetRepository=Mockito.mock(JpaVetRepositoryImpl.class);
 		visitRepository=Mockito.mock(JpaVisitRepositoryImpl.class);
-		
 		clinicServImpl=new ClinicServiceImpl(petRepository, vetRepository,ownerRepository, visitRepository);
-//		new ClinicServiceImpl(petRepository, vetRepository, ownerRepository, visitRepository)
 	}
 	
-
-	
-	// Test cases for Owner 
-	
-	@Test
-	public void testFindOwnerById()
+	protected Owner getOwner()
 	{
 		Owner o= new Owner();
 		o.setId(1);
+		o.setFirstName("Jack");
+		
+		o.setLastName("Daniel");
+		return o;
+	}
+	
+	@Test
+	void testFindOwnerById()
+	{
+		Owner o= getOwner();
 		
 		given(ownerRepository.findById(1)).willReturn(o);
 		
-		assertEquals(o, clinicServImpl.findOwnerById(1));
-		verify(ownerRepository).findById(1);
+		assertEquals(o, clinicServImpl.findOwnerById(o.getId()));
+		verify(ownerRepository).findById(o.getId());
 	}
 
 	
 	@Test
-	public void testFindOwnerByLastName()
+	void testFindOwnerByLastName()
 	{
-		Owner o= new Owner();
-		o.setLastName("Daniel");
+		Owner o= getOwner();
 		List<Owner> list=new ArrayList<Owner>();
 		
 		list.add(o);
 		
 		given(ownerRepository.findByLastName("Daniel")).willReturn(list);
 				
-		assertEquals(1, clinicServImpl.findOwnerByLastName("Daniel").size());
-		verify(ownerRepository).findByLastName("Daniel");
+		assertEquals(1, clinicServImpl.findOwnerByLastName(o.getLastName()).size());
+		verify(ownerRepository).findByLastName(o.getLastName());
 	}
 
 	@Test
-	public void saveOwner()
+	void saveOwner()
 	{
-		Owner o = new Owner();
-		o.setFirstName("Jack");
-		
+		Owner o = getOwner();
+
 		clinicServImpl.saveOwner(o);
 		verify(ownerRepository).save(o);
 	}
 
-	
-// Test cases for Pet 
-
+	protected Pet getPet()
+	{
+		Pet p= new Pet();
+		p.setId(1);
+		p.setName("Jack");
+		return p;
+	}
 	
 	@Test
-	public void savePet()
+	void savePet()
 	{
-		Pet p =new Pet();
-		p.setName("Jack");
+		Pet p =getPet();
 		clinicServImpl.savePet(p);
 		verify(petRepository).save(p);
 	}
 
 	@Test
-	public void testFindById()
+	void testFindById()
 	{
-		Pet p= new Pet();
-		p.setId(1);
+		Pet p= getPet();
 		
 		given(petRepository.findById(1)).willReturn(p);
-		
-		assertEquals(p, clinicServImpl.findPetById(1));
+		assertEquals(p, clinicServImpl.findPetById(p.getId()));
 		verify(petRepository).findById(Mockito.anyInt());
 	}
 	
 	@Test
-	public void testFindPetTypes()
+	void testFindPetTypes()
 	{
 		List<PetType> list= new ArrayList<PetType>();
 		
@@ -125,67 +128,50 @@ public class TestClinicServiceImpl {
 		given(petRepository.findPetTypes()).willReturn(list);
 		
 		Collection<PetType> list1= clinicServImpl.findPetTypes();
-		
 		assertEquals(3,list1.size());
 		Mockito.verify(petRepository).findPetTypes();
 	}
 	
-// Service for vet		
+
 	@Test
-	public void testFindVets()
+	void testFindVets()
 	{
 		Vet v= new Vet();
 		v.setFirstName("v");
 		Vet v2= new Vet();
 		v2.setFirstName("v2");
 		
-		
 		Collection<Vet> list=new ArrayList<Vet>();
 		list.add(v);
 		list.add(v2);
-		
 		given(vetRepository.findAll()).willReturn(list);
-		
 		int a=clinicServImpl.findVets().size();
-		
 		assertEquals(2, a);
-		
 		verify(vetRepository).findAll();
 	}
-	
-// service for visit
-	
 
+	
 	@Test
-	public void testsaveVisit()
+	void testsaveVisit()
 	{
 		Visit v = new Visit();
 		v.setId(1);
-		
 		clinicServImpl.saveVisit(v);
-	
 		verify(visitRepository).save(v);
 	}
 	
 	@Test
-	public void testFindVetsByPetId()
+	void testFindVetsByPetId()
 	{
-		Pet pet=new Pet();
-		pet.setId(1);
-		
+		Pet pet=getPet();
 		Visit v= new Visit();
 		v.setId(1);
-		
 		Collection<Visit> list=new ArrayList<Visit>();
 		list.add(v);
-		
-		given(visitRepository.findByPetId(1)).willReturn((List<Visit>) list);
-		
-		int a=clinicServImpl.findVisitsByPetId(1).size();
-		
+		given(visitRepository.findByPetId(pet.getId())).willReturn((List<Visit>) list);
+		int a=clinicServImpl.findVisitsByPetId(pet.getId()).size();
 		assertEquals(1, a);
-		
-		verify(visitRepository).findByPetId(1);
+		verify(visitRepository).findByPetId(pet.getId());
 	}
 
 	
